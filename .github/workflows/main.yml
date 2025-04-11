@@ -86,7 +86,7 @@ jobs:
             fi
         - name: start of workflow
           run: |
-            bash tg_utils.sh msg "gh $RUN_NUM: workflow started"
+            echo "gh $RUN_NUM: workflow started"
         - name: init build env
           run: |
             dnf group install development-tools -y
@@ -97,44 +97,44 @@ jobs:
         - name: show host info
           run: |
             if [ ! -z "$VERBOSE" ]; then
-              bash tg_utils.sh msg "gh $RUN_NUM: build env initialized%nlgh $RUN_NUM: host: $(cat /etc/os-release | grep PRETTY_NAME | cut -d'=' -f2)%nlgh $RUN_NUM: free disk space: $(df --sync -BM --output=avail / | grep -v Avail)"
+              echo "gh $RUN_NUM: build env initialized%nlgh $RUN_NUM: host: $(cat /etc/os-release | grep PRETTY_NAME | cut -d'=' -f2)%nlgh $RUN_NUM: free disk space: $(df --sync -BM --output=avail / | grep -v Avail)"
             fi
         - name: print notes if exists
           run: |
             if [ ! -z "$NOTE" ]; then
-              bash tg_utils.sh msg "gh $RUN_NUM: $NOTE"
+              echo "gh $RUN_NUM: $NOTE"
             fi
         - name: clone kernel source
           run: |
             if [ ! -z "$VERBOSE" ]; then
-              bash tg_utils.sh msg "gh $RUN_NUM: cloning kernel source%nlgh $RUN_NUM: repo: $REPO%nlgh $RUN_NUM: branch: $KERNEL_BRANCH"
+              echo "gh $RUN_NUM: cloning kernel source%nlgh $RUN_NUM: repo: $REPO%nlgh $RUN_NUM: branch: $KERNEL_BRANCH"
             fi
             git clone --depth=1 --single-branch $REPO -b $KERNEL_BRANCH kernel
         - name: print kernel info
           run: |
             cd kernel
             source ../env
-            bash ../tg_utils.sh msg "gh $RUN_NUM: kernel name: ${kernel_name}%nlgh $RUN_NUM: kernel ver: ${kernel_ver}%nlgh $RUN_NUM: kernel head commit: ${kernel_head}%nlgh $RUN_NUM: defconfig: ${defconfig}"
+            echo "gh $RUN_NUM: kernel name: ${kernel_name}%nlgh $RUN_NUM: kernel ver: ${kernel_ver}%nlgh $RUN_NUM: kernel head commit: ${kernel_head}%nlgh $RUN_NUM: defconfig: ${defconfig}"
         - name: run compilation scripts
           run: |
             cd kernel
             case $PATCH_KSU in
               "both" )
-                bash ../tg_utils.sh msg "gh $RUN_NUM: running compilation script(s): $COMPILERS"
+                echo "gh $RUN_NUM: running compilation script(s): $COMPILERS"
                 bash ../build.sh "$COMPILERS"
-                bash ../tg_utils.sh msg "gh $RUN_NUM: KernelSU patching enabled, patching"
+                echo "gh $RUN_NUM: KernelSU patching enabled, patching"
                 bash ../ksu/applyPatches.sh
-                bash ../tg_utils.sh msg "gh $RUN_NUM: running compilation script(s): $COMPILERS"
+                echo "gh $RUN_NUM: running compilation script(s): $COMPILERS"
                 bash ../build.sh "$COMPILERS"
               ;;
               "" )
-                bash ../tg_utils.sh msg "gh $RUN_NUM: running compilation script(s): $COMPILERS"
+                echo "gh $RUN_NUM: running compilation script(s): $COMPILERS"
                 bash ../build.sh "$COMPILERS"
               ;;
               * )
-                bash ../tg_utils.sh msg "gh $RUN_NUM: KernelSU patching enabled, patching"
+                echo "gh $RUN_NUM: KernelSU patching enabled, patching"
                 bash ../ksu/applyPatches.sh
-                bash ../tg_utils.sh msg "gh $RUN_NUM: running compilation script(s): $COMPILERS"
+                echo "gh $RUN_NUM: running compilation script(s): $COMPILERS"
                 bash ../build.sh "$COMPILERS"
               ;;
             esac
@@ -159,10 +159,10 @@ jobs:
           run: |
             WORKFLOW_END=$(date +"%s")
             WDIFF=$((WORKFLOW_END - WORKFLOW_START))
-            bash tg_utils.sh msg "gh $RUN_NUM: workflow failed in $((WDIFF / 60))m, $((WDIFF % 60))s"
+            echo "gh $RUN_NUM: workflow failed in $((WDIFF / 60))m, $((WDIFF % 60))s"
         - name: end of workflow
           run: |
             WORKFLOW_END=$(date +"%s")
             WDIFF=$((WORKFLOW_END - WORKFLOW_START))
-            bash tg_utils.sh msg "gh $RUN_NUM: workflow ended in $((WDIFF / 60))m, $((WDIFF % 60))s"
+            echo "gh $RUN_NUM: workflow ended in $((WDIFF / 60))m, $((WDIFF % 60))s"
 
